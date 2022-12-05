@@ -1,1 +1,353 @@
 
+imports System.Data.Oledb
+
+dim da as new OleDbDataAdapter
+dim dset as new DataSet
+dim comm as OleDbCommand
+
+sub Form()
+	populate ()
+	Timer1.Enabled = True
+end sub
+
+function Myclear()
+	txtF.clear()
+	txtM.clear()
+	txtS.clear()
+	dtpDOB.text = date.now
+	cboGender.SelectedIndex = -1
+	txtAge.clear()
+
+	txtStudID.clear()
+	cboProg.SelectedIndex = -1
+	cboYr.SelectedIndex = -1
+	Source.Text = "Choose Image"
+	
+	txtPhone.clear()
+	txtEmail.clear()
+	txtAddress.clear()
+end Function 
+
+function Time()
+	RD.text = Date.Now.ToString( "MMM, dd, yyyy  HH:SS")
+	'set timer to 1000
+end function 
+
+
+function populate()
+	da = new OleDbDataAdapter ("Select * from MyDatabase", conn)
+	dset = new DataSet
+	da.Fill(dset, "MyDatabase")
+	dgv1.DataSource = dset.Tables("MyDatabase").defaultview
+	return true
+end Function
+
+sub add()
+	connect()
+	if txtStudID = "" and txtF.text = "" and txtM.text = "" and txtS.text = "" then
+		messagebox.show("Please Complete the Data")
+	else
+		comm.Connection =conn
+		comm.Commandtext = "INSERT into MyDatabase values ('" & txtStudID.text & "', '" & txtF.text & "', '" & txtM.text & "', '" & txtS.text & "', '" & dtpDOB.text & "', '" & cboGender.text & "', '" & txtAge.text & "', '" & cboProg.text & "', '" & cboYr.text & "', '" & Source.text & "', '" & txtPhone.text & "', '" & txtEmail.text & "', '" & txtAddress.text & "', '" & RD.text & "')"
+		comm.ExecuteNonQuery()
+		populate()
+		Myclear()
+	end if 
+	
+	'insert into different tables in ms access
+	
+	if cboProg.Text = ICT then
+		comm.Connection =conn
+		comm.Commandtext = "INSERT into ICT values ('" & txtStudID.text & "', '" & txtF.text & "', '" & txtM.text & "', '" & txtS.text & "', '" & dtpDOB.text & "', '" & cboGender.text & "', '" & txtAge.text & "', '" & cboProg.text & "', '" & cboYr.text & "', '" & Source.text & "', '" & txtPhone.text & "', '" & txtEmail.text & "', '" & txtAddress.text & "', '" & RD.text & "')"
+		comm.ExecuteNonQuery()
+		messagebox.show("Successfully Registered as an ICT STUDENT!")
+	elseif cboProg.Text = ABM then
+		comm.Connection =conn
+		comm.Commandtext = "INSERT into ABM values ('" & txtStudID.text & "', '" & txtF.text & "', '" & txtM.text & "', '" & txtS.text & "', '" & dtpDOB.text & "', '" & cboGender.text & "', '" & txtAge.text & "', '" & cboProg.text & "', '" & cboYr.text & "', '" & Source.text & "', '" & txtPhone.text & "', '" & txtEmail.text & "', '" & txtAddress.text & "', '" & RD.text & "')"
+		comm.ExecuteNonQuery()
+		messagebox.show("Successfully Registered as an ABM STUDENT!")
+	elseif cboProg.Text = HE then
+		comm.Connection =conn
+		comm.Commandtext = "INSERT into HE values ('" & txtStudID.text & "', '" & txtF.text & "', '" & txtM.text & "', '" & txtS.text & "', '" & dtpDOB.text & "', '" & cboGender.text & "', '" & txtAge.text & "', '" & cboProg.text & "', '" & cboYr.text & "', '" & Source.text & "', '" & txtPhone.text & "', '" & txtEmail.text & "', '" & txtAddress.text & "', '" & RD.text & "')"
+		comm.ExecuteNonQuery()
+		messagebox.show("Successfully Registered as an HE STUDENT!")
+		else
+		END IF
+	
+	
+end sub
+
+sub BrowsePicture()
+	dim open as OpenFileDialog = new OpenFileDialog
+	
+	open.Filter = "Image Files (*.PNG;*.JPG;*.JPEG;*.GIF)|*.PNG;*.JPG;*.JPEG;*.GIF| All Files (*.*)| *.*"
+	open.Title = "Choose Image"
+	open.FilterIndex = 1
+	OpenFileDialog.ShowDialog()
+	Source.Text = open.FileName
+	If open.ShowDialog = Windows.forms.DialogResult.Ok then
+		PictureBox1.Image = Image.FromFile(Source.text)
+	End if
+	If Source.Text = "Browse Image" then
+		PictureBox1.Hide()
+		Else
+		PictureBox1.Show()
+	End if
+End sub
+
+sub AutoComputeBday()
+	dim now as DateTime = date.now
+	dim bday as DateTime = dtpDOB.Value
+	Dim yr as Integer = now.Year - Age.Year
+	if now.Month < bday.month or ( now.Month = bday.Month and now.Day < bday.day) then
+	yr -=1
+	end if
+	yr = txtAge.text
+end sub
+
+
+sub cellclick()
+	txtF.text = dgv1.rows.(e.Rowindex).Cells( 1 ).value.tostring
+	txtM.text = dgv1.rows.(e.Rowindex).Cells( 2 ).value.tostring
+	txtS.text = dgv1.rows.(e.Rowindex).Cells( 3 ).value.tostring
+	dtpDOB.text = dgv1.rows.(e.Rowindex).Cells( 4 ).value.tostring
+	cboGender.text = dgv1.rows.(e.Rowindex).Cells( 5 ).value.tostring
+	txtAge.text = dgv1.rows.(e.Rowindex).Cells( 6 ).value.tostring
+
+	txtStudID.text = dgv1.rows.(e.Rowindex).Cells( 0 ).value.tostring
+	cboProg.text = dgv1.rows.(e.Rowindex).Cells( 7 ).value.tostring
+	cboYr.text = dgv1.rows.(e.Rowindex).Cells( 8 ).value.tostring
+	Source.text = dgv1.rows.(e.Rowindex).Cells( 9 ).value.tostring
+	
+	txtPhone.text = dgv1.rows.(e.Rowindex).Cells( 10 ).value.tostring
+	txtEmail.text = dgv1.rows.(e.Rowindex).Cells( 11 ).value.tostring
+	txtAddress.text = dgv1.rows.(e.Rowindex).Cells( 12 ).value.tostring
+	RD.text = dgv1.rows.(e.Rowindex).Cells( 13 ).value.tostring
+end sub
+
+sub Update()
+	connect()
+	comm = new OleDbCommand
+	comm.CommandText = "UPDATE MyDatabase set Firstname='" & txtF.text & "',Middlename= '" & txtM.text & "', Surname= '" & txtS.text & "',DOB= '" & dtpDOB.text & "',Gender= '" & cboGender.text & "', Age= '" & txtAge.text & "', Program='" & cboProg.text & "', Level= '" & cboYr.text & "', Picture= '" & Source.text & "',Phone= '" & txtPhone.text & "', Email= '" & txtEmail.text & "', Address='" & txtAddress.text & "', Student_ID= '" & txtStudID.text & "' where Registration_Date='" & RD.text & "'"
+	comm.ExecuteNonQuery()
+	populate()
+	Myclear()
+end sub
+	
+sub Delete()
+	connect()
+	comm.Connection =conn
+	comm.Commandtext = "DELETE * from MyDatabase where Registration_Date='" & RD.text & "'"
+	comm.ExecuteNonQuery()
+	populate()
+	Myclear()
+end sub
+
+sub NumberOnly()
+	If Not ((e.KeyChar >= "0" And e.KeyChar <= "9") Or e.KeyChar = vbBack Or e.KeyChar = "+") Then
+            MessageBox.Show("Invalid Input! Numbers Only.", "Error Message", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            e.Handled = True
+        End If
+end sub
+
+sub Search_TextChange()
+	da = new OleDbDataAdapter ("Select * from MyDatabase where Student_ID like '%"& txtSearch.text &"%', Firstname like '%"& txtSearch.text &"%', Middlename like '%"& txtSearch.text &"%', Surname like '%"& txtSearch.text &"%'", conn)
+	dset = new DataSet
+	da.Fill(dset, "MyDatabase")
+	dgv1.DataSource = dset.Tables("MyDatabase").defaultview
+end sub
+
+
+
+sub txtStudID_LostFocus()
+if txtStudID.text <> "" then
+	da = new OleDbDataAdapter ("Select * from MyDatabase where Student_ID like '%"& txtStudID.text &"%', conn)
+	dset = new DataSet
+	da.Fill(dset, "MyDatabase")
+	if dset.tables("MyDatabase").rows.count > 0 then
+		txtStudID.clear()
+		MessageBox.Show("Student ID cannot be the same")
+	end if
+end if
+end sub
+
+sub mouse_hover()
+		txtSearch.text = ""
+end sub
+
+sub mouse_leave()
+	txtSearch.text = "Search Student_ID, Firstname, Middlename or Surname..."
+	txtSearch.ForeColor = Color.WhiteSmoke
+end sub 
+
+sub PrintBtn()
+	PrintPreviewDialog1.Document = PrintDocument1
+	PrintPreviewDialog1.ShowDialog()
+end sub
+
+
+sub PrintDoc1()
+	dim format as new stringformat
+	format.Alignment = StringAlignment.Center
+	e.Graphics.DrawString("STUDENT LIST", New Font ("Century Gothic", 20, fontstyle.bold)
+							brushes.black, new point( 480,20) format)
+							
+	dim fmt as new stringformat
+	fmt.LineAlignment = StringAlignment.Center
+	fmt.trimming = StringTrimming.EllipsisCharacter
+	fmt.Alignment = StringAlignment.Center
+
+	dim y as integer = 100
+	dim x as integer = 150
+	dim h as intege = 0
+	dim rc as Rectangle
+	dim row as Datagridviewrow
+ 	if newPage then
+		row = dgv1.Rows(mRow)
+		x = 150
+		 for each cell in datagridviewcell in row.cells
+			if cell.Visible then
+				rc = new Rectangle (x, y, cell.Size.width, cell.Size.heigth)
+				e.Graphics.FillRectangle(Brushes.LightGray, rc)
+				e.Graphics.DrawRectangle(Brushes.Black, rc)
+				
+				e.Graphics.DrawString(dgv1.Columns(cell.columnIndex).HeaderText, dgv1.font, Brushes.Black, rc, fmt)
+				x += rc.width
+				h = math.max(h, rc.height)
+				end if
+			next
+			y += h
+		end if
+
+
+	newPage = False
+	dim displayrow as integer
+		for displayrow = mRow to  dgv1.rowcount - 1
+		row = dgv1.Rows(displayrow)
+		x = 150
+		h = 0
+			
+			for each cell datagridviewcell row.cells
+				if cell.Visible then
+					rc = new Rectangle (x, y, cell.Size.width, cell.Size.heigth)
+		 			e.Graphics.DrawRectangle(Brushes.Black, rc)
+		
+					fmt.Alignment = StringAlignment.Near
+					rc.Offset( 10, 0)
+		
+					e.Graphics.DrawString(cell.FormattedValue.Tostring()
+										dgv1.font, Brushes.Black, rc, fmt)
+		
+		
+				x += rc.width
+				h = math.max(h, rc.height)
+				end if
+			next
+			y += h
+		end if
+	next
+end sub
+
+
+	'import and export as excel file
+
+Imports System.Linq
+Imports System.Data.SqlClient
+Imports System.Data.OleDb
+Imports Microsoft.Office.Core
+Imports Excel = Microsoft.Office.Interop.Excel
+Imports ExcelAutoFormat = Microsoft.Office.Interop.Excel.XlRangeAutoFormat
+Imports Microsoft.Office.Interop
+Imports System.IO
+Imports System.Xml.XPath
+Imports System.Data
+Imports System.Xml
+
+sub FileExportToExcel()
+		Try
+            ButtonExportToExcel.Text = "Please Wait..."
+            ButtonExportToExcel.Enabled = False
+
+            SaveFileDialog1.Filter = "Excel Document (*.xlsx)|*.xlsx"
+            If SaveFileDialog1.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+                Dim xlApp As Microsoft.Office.Interop.Excel.Application
+                Dim xlWorkBook As Microsoft.Office.Interop.Excel.Workbook
+                Dim xlWorkSheet As Microsoft.Office.Interop.Excel.Worksheet
+                Dim misValue As Object = System.Reflection.Missing.Value
+                Dim i As Integer
+                Dim j As Integer
+
+                xlApp = New Microsoft.Office.Interop.Excel.Application
+                xlWorkBook = xlApp.Workbooks.Add(misValue)
+                xlWorkSheet = xlWorkBook.Sheets("sheet1")
+
+                For i = 0 To dgv1.RowCount - 2
+                    For j = 0 To dgv1.ColumnCount - 1
+                        For k As Integer = 1 To dgv1.Columns.Count
+                            xlWorkSheet.Cells(1, k) = dgv1.Columns(k - 1).HeaderText
+                            xlWorkSheet.Cells(i + 2, j + 1) = dgv1(j, i).Value.ToString()
+                        Next
+                    Next
+                Next
+
+                xlWorkSheet.SaveAs(SaveFileDialog1.FileName)
+                xlWorkBook.Close()
+                xlApp.Quit()
+
+                releaseObject(xlApp)
+                releaseObject(xlWorkBook)
+                releaseObject(xlWorkSheet)
+
+                MsgBox("Successfully saved" & vbCrLf & "File are saved at : " & SaveFileDialog1.FileName, MsgBoxStyle.Information, "Information")
+
+                ButtonExportToExcel.Text = "Export To MS Excel"
+                ButtonExportToExcel.Enabled = True
+            End If
+        Catch ex As Exception
+            MessageBox.Show("Failed to save !!!", "Error Message", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return
+        End Try
+    End Sub
+
+    Private Sub releaseObject(ByVal obj As Object)
+        Try
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(obj)
+            obj = Nothing
+        Catch ex As Exception
+            obj = Nothing
+        Finally
+            GC.Collect()
+        End Try
+    End Sub
+
+sub ImportExcel()
+	Dim conn As OleDbConnection
+        Dim dtr As OleDbDataReader
+        Dim dta As OleDbDataAdapter
+        Dim cmd As OleDbCommand
+        Dim dts As DataSet
+        Dim excel As String
+        Dim OpenFileDialog As New OpenFileDialog
+
+        OpenFileDialog1.FileName = ""
+        OpenFileDialog1.InitialDirectory = My.Computer.FileSystem.SpecialDirectories.Desktop
+        OpenFileDialog1.Filter = "All Files (*.*)|*.*|Excel files (*.xlsx)|*.xlsx|CSV Files (*.csv)|*.csv|XLS Files (*.xls)|*xls"
+
+        If (OpenFileDialog1.ShowDialog(Me) = System.Windows.Forms.DialogResult.OK) Then
+            dgv1.Columns.Clear()
+
+            Dim fi As New FileInfo(OpenFileDialog1.FileName)
+            Dim FileName As String = OpenFileDialog1.FileName
+
+            excel = fi.FullName
+            conn = New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + excel + ";Extended Properties=Excel 12.0;")
+            dta = New OleDbDataAdapter("Select * From [Sheet1$]", conn)
+            dts = New DataSet
+            dta.Fill(dts, "[Sheet1$]")
+            dgv1.DataSource = dts
+            dgv1.DataMember = "[Sheet1$]"
+            conn.Close()
+        End If
+    End Sub
+	
+	
